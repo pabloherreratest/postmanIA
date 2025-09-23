@@ -1,7 +1,5 @@
 # Nerdearla 2025 - Postman + IA
 
-Documento listo para copiar/pegar en tu repositorio GitHub. Contiene el **Prompt Template** para generar collections con IA, un **ejemplo relleno** y **snippets de tests** para Postman + pasos para importar la colección.
-
 ---
 
 ## Endpoints de prueba

@@ -1,0 +1,232 @@
+{
+  "info": {
+    "_postman_id": "b4a4d420-8c3a-4b2a-9c7d-1a2b3c4d5e6f",
+    "name": "Pruebas API Crear Productos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección para prueba de creación de productos. Contiene 4 requests con tests para validar status y estructura."
+  },
+  "item": [
+    {
+      "name": "Crear Producto Exitoso",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"{{product_title_unique}}\",\n  \"price\": 10,\n  \"description\": \"A description\",\n  \"categoryId\": 1,\n  \"images\": [\"https://placehold.co/600x400\"]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.set('product_title_unique', 'New Product ' + Date.now());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "try { var body = pm.response.json(); } catch (e) { var body = {}; }",
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "pm.test('Response has expected fields', function () {",
+              "    pm.expect(body).to.be.an('object');",
+              "    pm.expect(body).to.have.property('title');",
+              "    pm.expect(body).to.have.property('price');",
+              "    pm.expect(body).to.have.property('description');",
+              "    pm.expect(body).to.have.property('images');",
+              "    pm.expect(body).to.have.property('category');",
+              "    pm.expect(body.category).to.have.property('id');",
+              "    pm.expect(body).to.have.property('id');",
+              "    pm.expect(body).to.have.property('creationAt');",
+              "    pm.expect(body).to.have.property('updatedAt');",
+              "});",
+              "pm.test('creationAt and updatedAt are valid ISO dates and equal', function () {",
+              "    var creation = Date.parse(body.creationAt);",
+              "    var updated = Date.parse(body.updatedAt);",
+              "    pm.expect(creation).to.be.a('number');",
+              "    pm.expect(updated).to.be.a('number');",
+              "    pm.expect(body.creationAt).to.eql(body.updatedAt);",
+              "});",
+              "pm.test('creationAt is todays date (UTC date part)', function () {",
+              "    var today = new Date().toISOString().split('T')[0];",
+              "    var creationDate = new Date(body.creationAt).toISOString().split('T')[0];",
+              "    pm.expect(creationDate).to.eql(today);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error - categoryID no enviado",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"{{product_title_no_category}}\",\n  \"price\": 10,\n  \"description\": \"A description\",\n  \"images\": [\"https://placehold.co/600x400\"]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.set('product_title_no_category', 'New Product NoCategory ' + Date.now());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "try { var body = pm.response.json(); } catch (e) { var body = {}; }",
+              "pm.test('Status code is 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('Body has error structure (message array + error + statusCode)', function () {",
+              "    pm.expect(body).to.be.an('object');",
+              "    pm.expect(body).to.have.property('message').that.is.an('array');",
+              "    pm.expect(body).to.have.property('error');",
+              "    pm.expect(body).to.have.property('statusCode');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error - categoryID con valor de tipo string",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"{{product_title_cat_string}}\",\n  \"price\": 10,\n  \"description\": \"A description\",\n  \"categoryId\": \"1\",\n  \"images\": [\"https://placehold.co/600x400\"]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.environment.set('product_title_cat_string', 'New Product CatString ' + Date.now());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "try { var body = pm.response.json(); } catch (e) { var body = {}; }",
+              "pm.test('Status code is 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('Body has error structure (message array + error + statusCode)', function () {",
+              "    pm.expect(body).to.be.an('object');",
+              "    pm.expect(body).to.have.property('message').that.is.an('array');",
+              "    pm.expect(body).to.have.property('error');",
+              "    pm.expect(body).to.have.property('statusCode');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error - Nombre de producto ya existente",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"{{product_title_unique}}\",\n  \"price\": 10,\n  \"description\": \"A description\",\n  \"categoryId\": 1,\n  \"images\": [\"https://placehold.co/600x400\"]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/products",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "products"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "try { var body = pm.response.json(); } catch (e) { var body = {}; }",
+              "pm.test('Status code is 409', function () { pm.response.to.have.status(409); });",
+              "pm.test('Response contains conflict message', function () {",
+              "    pm.expect(body).to.have.property('message').that.is.an('array');",
+              "    pm.expect(body.message).that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://api.escuelajs.co/api/v1",
+      "type": "string"
+    }
+  ]
+}

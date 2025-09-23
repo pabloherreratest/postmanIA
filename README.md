@@ -27,6 +27,7 @@ Especificaciones de la Colección:
     - Especificación 2
     - Especificación 3
 Instrucción Final: [Indica el formato de la respuesta. El mejor formato es un bloque de código con la estructura completa de la colección en Postman, lista para copiar y pegar. Esto puede ser un objeto JSON que Postman pueda importar.]
+```
 
 # Ejemplo usando el Prompt Template para armar collections
 
